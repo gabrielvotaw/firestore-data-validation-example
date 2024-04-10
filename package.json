@@ -1,0 +1,27 @@
+{
+  "name": "firestore-data-validation-example",
+  "version": "1.0.0",
+  "description": "automatic firestore data validation example",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "firestore",
+    "data",
+    "schema",
+    "validation",
+    "model",
+    "type",
+    "typescript",
+    "javascript",
+    "validate"
+  ],
+  "author": "Gabriel Votaw",
+  "license": "MIT",
+  "dependencies": {
+    "@sinclair/typebox": "^0.32.20",
+    "dotenv": "^16.4.5",
+    "firebase-admin": "^12.0.0"
+  }
+}
