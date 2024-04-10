@@ -11,7 +11,6 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 
 // init firestore
 admin.initializeApp({ projectId: process.env.PROJECT_ID });
-const firestore = admin.firestore();
 
 // placeholder for invalid documents
 export const invalidDocument = Symbol('invalid firestore document');
@@ -26,24 +25,26 @@ const converter = <T>(schema: TSchema): fs.FirestoreDataConverter<T | typeof inv
     const data = snapshot.data();
     // check that the document obeys our defined schema
     const isValid = Value.Check(schema, data);
-    if (isValid) {
-      // if it respects our schema, return the data as the corresponding type
-      return data as T;
-    } else {
+
+    if (!isValid) {
       // if it does not respect our schema, log the error and mark it as invalid. this document can't be used safely
       const errMessage = getValidationErrorMessage(schema, data);
       console.error(`invalid document: ${errMessage}`);
       return invalidDocument;
     }
+
+    // if it respects our schema, return the data as the corresponding type
+    return data as T;
   }
 });
 
-// provide the schema and the concrete type to the converter to perform data validation
-const dataPoint = <T>(schema: TSchema, collection: string) => firestore
+// provide the schema and the concrete type to the converter
+const dataPoint = <T>(schema: TSchema, collection: string) => admin
+  .firestore()
   .collection(collection)
   .withConverter(converter<T>(schema));
 
-// define the data points (collections)
+// define the data points
 export const db = {
   users: dataPoint<User>(userSchema, config.usersCollection),
 }
