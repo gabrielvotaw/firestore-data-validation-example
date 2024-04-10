@@ -1,18 +1,40 @@
+import { User } from "./user/model";
 import { FirestoreUserRepository } from "./user/repository";
-
-// set these up in the emulator suite
-const validUserId = 'XHuNzyXUuj9Bqby7GcUN';
-const invalidUserId = 'w06fgTLvCihGTGhMkVJ8';
 
 (async () => {
   const repo = new FirestoreUserRepository();
 
-  const validUser = await repo.getUser(validUserId);
+  await repo.deleteAllUsers();
+
+  const newValidUser = await repo.addUser({
+    username: 'valid_user12',
+    email: 'valid_user@email.com',
+    age: 24,
+    isEmailVerified: true,
+  });
+  const validUser = await repo.getUser(newValidUser.id);
   console.log(validUser); // not null
 
-  const invalidUser = await repo.getUser(invalidUserId);
-  console.log(invalidUser); // null, error: "invalid document: Expected number for path '/age' but found '35'"
+
+  await repo.addUser({
+    username: 'invalid_user43',
+    email: 'invalid_user@email.com',
+    age: '36',
+    isEmailVerified: false,
+  } as any as Omit<User, 'id'>)
+    .catch((err) => console.log(err)); // we expect this error
+
+
+  const newInvalidUser = await repo.addUser({
+    username: 'invalid_user43',
+    email: 'invalid_user@email.com',
+    age: '36',
+    isEmailVerified: false,
+  } as any as Omit<User, 'id'>, true); // bypass validation and force add the user
+  const invalidUser = await repo.getUser(newInvalidUser.id);
+  console.log(invalidUser); // null
+
 
   const allUsers = await repo.getAllUsers();
-  console.log(allUsers); // array of length 1, with valid user
+  console.log(allUsers); // array of length 1, with valid user. invalid document not returned
 })();
