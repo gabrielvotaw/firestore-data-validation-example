@@ -8,13 +8,9 @@ import { User, userSchema } from './user/model';
 import { getValidationErrorMessage } from './util/validation';
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
-const projectId = process.env.PROJECT_ID;
+
 // init firestore
-admin.initializeApp({
-  projectId,
-  storageBucket: `${projectId}.appspot.com`,
-  serviceAccountId: `${projectId}@appspot.gserviceaccount.com`,
-});
+admin.initializeApp({ projectId: process.env.PROJECT_ID });
 const firestore = admin.firestore();
 
 // placeholder for invalid documents
